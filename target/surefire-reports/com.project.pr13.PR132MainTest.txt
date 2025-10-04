@@ -1,0 +1,24 @@
+-------------------------------------------------------------------------------
+Test set: com.project.pr13.PR132MainTest
+-------------------------------------------------------------------------------
+Tests run: 5, Failures: 0, Errors: 5, Skipped: 0, Time elapsed: 0.417 s <<< FAILURE! - in com.project.pr13.PR132MainTest
+com.project.pr13.PR132MainTest.testLlistarCursos  Time elapsed: 0.289 s  <<< ERROR!
+java.lang.NullPointerException: Cannot invoke "java.util.List.size()" because "cursos" is null
+	at com.project.pr13.PR132MainTest.testLlistarCursos(PR132MainTest.java:68)
+
+com.project.pr13.PR132MainTest.testLlistarAlumnes  Time elapsed: 0.012 s  <<< ERROR!
+java.lang.NullPointerException: Cannot invoke "java.util.List.contains(Object)" because "alumnes" is null
+	at com.project.pr13.PR132MainTest.testLlistarAlumnes(PR132MainTest.java:87)
+
+com.project.pr13.PR132MainTest.testAfegirAlumne  Time elapsed: 0.014 s  <<< ERROR!
+java.lang.NullPointerException: Cannot invoke "java.util.List.contains(Object)" because "alumnes" is null
+	at com.project.pr13.PR132MainTest.testAfegirAlumne(PR132MainTest.java:98)
+
+com.project.pr13.PR132MainTest.testEliminarAlumne  Time elapsed: 0.009 s  <<< ERROR!
+java.lang.NullPointerException: Cannot invoke "java.util.List.contains(Object)" because "alumnes" is null
+	at com.project.pr13.PR132MainTest.testEliminarAlumne(PR132MainTest.java:108)
+
+com.project.pr13.PR132MainTest.testMostrarModuls  Time elapsed: 0.006 s  <<< ERROR!
+java.lang.NullPointerException: Cannot invoke "java.util.List.size()" because "moduls" is null
+	at com.project.pr13.PR132MainTest.testMostrarModuls(PR132MainTest.java:79)
+
