@@ -1,3 +1,4 @@
+
 package com.project.pr13;
 
 import org.w3c.dom.Document;
@@ -23,10 +24,12 @@ import java.util.List;
 import java.util.Scanner;
 
 /**
- * Classe principal que permet gestionar un fitxer XML de cursos amb opcions per llistar, afegir i eliminar alumnes, 
+ * Classe principal que permet gestionar un fitxer XML de cursos amb opcions per
+ * llistar, afegir i eliminar alumnes,
  * així com mostrar informació dels cursos i mòduls.
  * 
- * Aquesta classe inclou funcionalitats per interactuar amb un fitxer XML, executar operacions de consulta,
+ * Aquesta classe inclou funcionalitats per interactuar amb un fitxer XML,
+ * executar operacions de consulta,
  * i realitzar modificacions en el contingut del fitxer.
  */
 public class PR132Main {
@@ -46,7 +49,8 @@ public class PR132Main {
     /**
      * Mètode principal que inicia l'execució del programa.
      * 
-     * @param args Arguments passats a la línia de comandament (no s'utilitzen en aquest programa).
+     * @param args Arguments passats a la línia de comandament (no s'utilitzen en
+     *             aquest programa).
      */
     public static void main(String[] args) {
         String userDir = System.getProperty("user.dir");
@@ -133,13 +137,42 @@ public class PR132Main {
     }
 
     /**
-     * Llegeix el fitxer XML i llista tots els cursos amb el seu tutor i nombre d'alumnes.
+     * Llegeix el fitxer XML i llista tots els cursos amb el seu tutor i nombre
+     * d'alumnes.
      * 
      * @return Llista amb la informació dels cursos (ID, tutor, nombre d'alumnes).
      */
     public List<List<String>> llistarCursos() {
-        // *************** CODI PRÀCTICA **********************/
-        return null; // Substitueix pel teu
+        List<List<String>> cursos = new ArrayList<>();
+        try {
+            Document doc = carregarDocumentXML(xmlFilePath);
+            XPath xpath = XPathFactory.newInstance().newXPath();
+
+            // Obtenir tots els nodes de curs
+            NodeList cursNodes = (NodeList) xpath.evaluate("//curs", doc, XPathConstants.NODESET);
+
+            for (int i = 0; i < cursNodes.getLength(); i++) {
+                Node cursNode = cursNodes.item(i);
+                Element cursElement = (Element) cursNode;
+
+                // Obtenir l'ID del curs
+                String id = cursElement.getAttribute("id");
+
+                // Obtenir el tutor
+                String tutor = xpath.evaluate("tutor/text()", cursNode);
+
+                // Comptar els alumnes
+                NodeList alumnesNodes = (NodeList) xpath.evaluate("alumnes/alumne", cursNode, XPathConstants.NODESET);
+                String totalAlumnes = String.valueOf(alumnesNodes.getLength());
+
+                // Afegir la informació a la llista
+                cursos.add(List.of(id, tutor, totalAlumnes));
+            }
+        } catch (Exception e) {
+            System.out.println("Error en llistar els cursos: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return cursos;
     }
 
     /**
@@ -159,8 +192,33 @@ public class PR132Main {
      * @return Llista amb la informació dels mòduls (ID, títol).
      */
     public List<List<String>> mostrarModuls(String idCurs) {
-        // *************** CODI PRÀCTICA **********************/
-        return null; // Substitueix pel teu
+        List<List<String>> moduls = new ArrayList<>();
+        try {
+            Document doc = carregarDocumentXML(xmlFilePath);
+            XPath xpath = XPathFactory.newInstance().newXPath();
+
+            // Obtenir tots els mòduls del curs especificat
+            String xpathExpr = "//curs[@id='" + idCurs + "']/moduls/modul";
+            NodeList modulNodes = (NodeList) xpath.evaluate(xpathExpr, doc, XPathConstants.NODESET);
+
+            for (int i = 0; i < modulNodes.getLength(); i++) {
+                Node modulNode = modulNodes.item(i);
+                Element modulElement = (Element) modulNode;
+
+                // Obtenir l'ID del mòdul
+                String idModul = modulElement.getAttribute("id");
+
+                // Obtenir el títol del mòdul
+                String titol = xpath.evaluate("titol/text()", modulNode);
+
+                // Afegir la informació a la llista
+                moduls.add(List.of(idModul, titol));
+            }
+        } catch (Exception e) {
+            System.out.println("Error en mostrar els mòduls: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return moduls;
     }
 
     /**
@@ -180,8 +238,23 @@ public class PR132Main {
      * @return Llista amb els noms dels alumnes.
      */
     public List<String> llistarAlumnes(String idCurs) {
-        // *************** CODI PRÀCTICA **********************/
-        return null; // Substitueix pel teu
+        List<String> alumnes = new ArrayList<>();
+        try {
+            Document doc = carregarDocumentXML(xmlFilePath);
+            XPath xpath = XPathFactory.newInstance().newXPath();
+
+            // Obtenir tots els alumnes del curs especificat
+            String xpathExpr = "//curs[@id='" + idCurs + "']/alumnes/alumne/text()";
+            NodeList alumnesNodes = (NodeList) xpath.evaluate(xpathExpr, doc, XPathConstants.NODESET);
+
+            for (int i = 0; i < alumnesNodes.getLength(); i++) {
+                alumnes.add(alumnesNodes.item(i).getNodeValue());
+            }
+        } catch (Exception e) {
+            System.out.println("Error en llistar els alumnes: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return alumnes;
     }
 
     /**
@@ -197,21 +270,68 @@ public class PR132Main {
     /**
      * Afegeix un alumne a un curs especificat pel seu ID.
      * 
-     * @param idCurs ID del curs on es vol afegir l'alumne.
+     * @param idCurs    ID del curs on es vol afegir l'alumne.
      * @param nomAlumne Nom de l'alumne a afegir.
      */
     public void afegirAlumne(String idCurs, String nomAlumne) {
-        // *************** CODI PRÀCTICA **********************/
+        try {
+            Document doc = carregarDocumentXML(xmlFilePath);
+            XPath xpath = XPathFactory.newInstance().newXPath();
+
+            // Trobar el node alumnes del curs especificat
+            String xpathExpr = "//curs[@id='" + idCurs + "']/alumnes";
+            Node alumnesNode = (Node) xpath.evaluate(xpathExpr, doc, XPathConstants.NODE);
+
+            if (alumnesNode != null) {
+                // Crear un nou element alumne
+                Element nouAlumne = doc.createElement("alumne");
+                nouAlumne.setTextContent(nomAlumne);
+
+                // Afegir el nou alumne al node alumnes
+                alumnesNode.appendChild(nouAlumne);
+
+                // Guardar el document modificat
+                guardarDocumentXML(doc);
+                System.out.println("Alumne '" + nomAlumne + "' afegit al curs " + idCurs);
+            } else {
+                System.out.println("No s'ha trobat el curs amb ID: " + idCurs);
+            }
+        } catch (Exception e) {
+            System.out.println("Error en afegir l'alumne: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     /**
      * Elimina un alumne d'un curs especificat pel seu ID.
      * 
-     * @param idCurs ID del curs d'on es vol eliminar l'alumne.
+     * @param idCurs    ID del curs d'on es vol eliminar l'alumne.
      * @param nomAlumne Nom de l'alumne a eliminar.
      */
     public void eliminarAlumne(String idCurs, String nomAlumne) {
-        // *************** CODI PRÀCTICA **********************/
+        try {
+            Document doc = carregarDocumentXML(xmlFilePath);
+            XPath xpath = XPathFactory.newInstance().newXPath();
+
+            // Trobar l'alumne específic dins del curs
+            String xpathExpr = "//curs[@id='" + idCurs + "']/alumnes/alumne[text()='" + nomAlumne + "']";
+            Node alumneNode = (Node) xpath.evaluate(xpathExpr, doc, XPathConstants.NODE);
+
+            if (alumneNode != null) {
+                // Eliminar l'alumne del seu node pare
+                Node pareNode = alumneNode.getParentNode();
+                pareNode.removeChild(alumneNode);
+
+                // Guardar el document modificat
+                guardarDocumentXML(doc);
+                System.out.println("Alumne '" + nomAlumne + "' eliminat del curs " + idCurs);
+            } else {
+                System.out.println("No s'ha trobat l'alumne '" + nomAlumne + "' al curs " + idCurs);
+            }
+        } catch (Exception e) {
+            System.out.println("Error en eliminar l'alumne: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     /**
